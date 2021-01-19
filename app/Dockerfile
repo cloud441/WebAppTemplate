@@ -10,8 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE="true" \
 
 WORKDIR /application
 
-COPY . /application
+COPY requirements.txt /application
 
 RUN pip3 install -r requirements.txt
 
-CMD ["gunicorn", "-w 4", "-b", "0.0.0.0:8000", "__init__:create_app()"]
+COPY . /application
+
+CMD ["gunicorn", "-w 4", "-b", "0.0.0.0:8000", "wsgi"]

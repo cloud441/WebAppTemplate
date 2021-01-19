@@ -1,14 +1,17 @@
 import os
 from flask import Flask
 from flask_material import Material
+from flask_debug import Debug
 
 
 from frontend import blueprint
+import database.db as db
 
 
 def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
+    Debug(app)
 
     # Front-end blueprint architecture of the app.
     Material(app)
@@ -17,6 +20,7 @@ def create_app(test_config=None):
     #SECRET_KEY must be overidden with random value for deploying.
     app.config.from_mapping(SECRET_KEY='dev',
             DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
+            FLASK_DEBUG_DISABLE_STRICT='True',
             )
     app.debug = True
 
@@ -34,6 +38,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+
+    #Database managment
+    with app.app_context():
+        db.init_app(app)
 
 
     return app

@@ -3,6 +3,8 @@ gunicorn>=19,<20
 Jinja2==2.11.2
 Flask-Materialize==0.2.4
 Flask-Debug==0.4.3
+db-sqlite3==0.0.1
+Flask-Appconfig
 flask-nav
 flask-login
 Werkzeug

@@ -1,0 +1,17 @@
+FROM python:3.7-alpine
+
+RUN mkdir /application
+RUN apk update && \
+    apk add --virtual build-deps gcc python3-dev musl-dev
+
+## set environment variables for security concern
+ENV PYTHONDONTWRITEBYTECODE="true" \
+    PYTHONUNBUFFERED="true"
+
+WORKDIR /application
+
+COPY . /application
+
+RUN pip3 install -r requirements.txt
+
+CMD ["gunicorn", "-w 4", "-b", "0.0.0.0:8000", "__init__:create_app()"]

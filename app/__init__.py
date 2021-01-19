@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, url_for
 from flask_material import Material
 from flask_debug import Debug
 
@@ -17,8 +17,8 @@ def create_app(test_config=None):
     Material(app)
     app.register_blueprint(blueprint)
 
-    #SECRET_KEY must be overidden with random value for deploying.
-    app.config.from_mapping(SECRET_KEY='dev',
+    APP_SECRET_KEY = os.urandom(32)
+    app.config.from_mapping(SECRET_KEY=APP_SECRET_KEY,
             DATABASE=os.path.join(app.instance_path, 'app.sqlite'),
             FLASK_DEBUG_DISABLE_STRICT='True',
             )

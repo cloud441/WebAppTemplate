@@ -1,8 +1,8 @@
 Flask==1.1.2
 gunicorn>=19,<20
 Jinja2==2.11.2
-flask-bootstrap
-flask-debug
+Flask-Materialize==0.2.4
+Flask-Debug==0.4.3
 flask-nav
 flask-login
 Werkzeug

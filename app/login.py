@@ -1,48 +1,33 @@
-from flask import session, g
+from flask_login import UserMixin, LoginManager
 
 
-from database.db import get_db
+
+login_manager = LoginManager()
 
 
-class Logger():
+
+class Logger(UserMixin):
 
 
-    def __init__(self):
-        self.logged = False
-
-
-    @staticmethod
-    def loadLoggedUser():
-        user_id = session.get('user_id')
-
-        if user_id is None:
-            g.user = None
-        else:
-            g.user = get_db().execute(
-                'SELECT * FROM user WHERE id = ?', (user_id,)
-            ).fetchone()
+    def __init__(self, name, id, active=True):
+        self.name = name
+        self.id = id
+        self.active = active
 
 
 
 
-    def login_user(self, user):
-
-        session.clear()
-        session['user_id'] = user['id']
-        self.logged = True
+    def is_active(self):
+        return self.active
 
 
 
 
-    def logout_user(self):
-        session.clear()
-        self.logged = False
+    def is_anonymous(self):
+        return False
 
 
 
 
-    def is_logged(self):
-        return self.logged
-
-
-logger = Logger()
+    def is_authentificated(self):
+        return True

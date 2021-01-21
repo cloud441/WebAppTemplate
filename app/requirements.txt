@@ -6,4 +6,5 @@ Flask-Debug==0.4.3
 db-sqlite3==0.0.1
 Flask-Appconfig
 flask-nav
+flask-login==0.5.0
 Werkzeug

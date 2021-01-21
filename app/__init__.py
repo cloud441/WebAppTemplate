@@ -2,8 +2,10 @@ import os
 from flask import Flask, url_for
 from flask_material import Material
 from flask_debug import Debug
+from flask_login import LoginManager
 
 
+from login import login_manager
 from frontend import blueprint
 import database.db as db
 
@@ -42,6 +44,10 @@ def create_app(test_config=None):
     #Database managment
     with app.app_context():
         db.init_app(app)
+
+
+    login_manager.init_app(app)
+    login_manager.login_view = 'blueprint.login'
 
 
     return app

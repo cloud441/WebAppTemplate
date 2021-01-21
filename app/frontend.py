@@ -4,24 +4,22 @@ from flask import (
         )
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_material import Material
+from flask_login import login_required, login_user, logout_user
 
 
 from database.db import get_db
-from login import logger
+from login import Logger, login_manager
 
 
 
-blueprint = Blueprint('blueprint', __name__, url_prefix='/auth')
+blueprint = Blueprint('blueprint', __name__)
 
 
 
 @blueprint.route('/')
+@login_required
 def index():
-
-    if not logger.is_logged():
-        return redirect(url_for('blueprint.login'))
-
-    return "Hello world!"
+    return render_template('index.html')
 
 
 
@@ -52,8 +50,8 @@ def register():
 
         if error is None:
             db.execute(
-                'INSERT INTO user (firstname, lastname, email, password) VALUES (?, ?, ?, ?)',
-                (firstname, lastname, email, generate_password_hash(password))
+                'INSERT INTO user (firstname, lastname, email, password, active) VALUES (?, ?, ?, ?, ?)',
+                (firstname, lastname, email, generate_password_hash(password), 1)
             )
             db.commit()
             return redirect(url_for('blueprint.login'))
@@ -85,7 +83,8 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
-            logger.login_user(user)
+            logger_user = load_user(user['id'])
+            login_user(logger_user)
             return redirect(url_for('blueprint.index'))
 
         flash(error)
@@ -96,16 +95,20 @@ def login():
 
 
 @blueprint.route('/logout')
+@login_required
 def logout():
 
-    if not logger.is_logged():
-        redirect(url_for('blueprint.login'))
-
-    logger.logout_user()
+    logout_user()
     return redirect(url_for('blueprint.login'))
 
 
 
-@blueprint.before_app_request
-def loadUser():
-    logger.loadLoggedUser()
+
+@login_manager.user_loader
+def load_user(id):
+    db = get_db()
+    user = db.execute(
+            'SELECT * FROM user WHERE id = ?', (id,)
+        ).fetchone()
+
+    return Logger(user['firstname'],user['id'],user['active'])
